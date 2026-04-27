@@ -1,0 +1,5 @@
+id,text,duration,text_raw,normalization_changed,normalization_version,audio_path
+sample_00005592,هوكا كان بش ياخو في خاطره ويحب يفجرهم يفجرهم هوما,3.191,هوكا كان بش ياخو في خاطره ويحب يفجرهم يفجرهم هوما,False,v1,/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/extracted_wavs/sample_00005592.wav
+sample_00003909,ولاد لحلال هذوما في حياتكم بش تقابلوهم برشا,3.231,ولاد لحلال هذوما في حياتكم بش تقابلوهم برشا,False,v1,/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/extracted_wavs/sample_00003909.wav
+sample_00003946,donc توصل للقمة ثمة le goffre تشوف الهفهوف,4.619,donc توصل للقمة ثمة le goffre تشوف الهفهوف,False,v1,/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/extracted_wavs/sample_00003946.wav
+sample_00005506,اكثر سؤال ديما تلامذتي يسئلوهولي madame ياخي وقتاش بدات القضية الفلسطينية تحس عندها السنين الكل,5.66,أكثر سؤال ديما تلامذتي يسئلوهولي madame ياخي وقتاش بدات القضية الفلسطينية تحس عندها السنين الكل,True,v1,/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/extracted_wavs/sample_00005506.wav

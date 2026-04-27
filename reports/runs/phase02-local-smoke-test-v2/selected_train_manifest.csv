@@ -1,0 +1,9 @@
+id,text,duration,text_raw,normalization_changed,normalization_version,audio_path
+sample_00011842,merci,0.961,merci,False,v1,/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/extracted_wavs/sample_00011842.wav
+sample_00009936,انت شعري واوطاني,1.195,إنت شعري وأوطاني,True,v1,/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/extracted_wavs/sample_00009936.wav
+sample_00006807,شكون يحب يخدم في القطاع العام,1.53,شكون يحب يخدم في القطاع العام,False,v1,/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/extracted_wavs/sample_00006807.wav
+sample_00018132,الي i discovered something الي الحق,3.348,إلي i discovered something إلي الحق,True,v1,/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/extracted_wavs/sample_00018132.wav
+sample_00010532,هذيا ن كيما كنت نحكي لك امبكري مدام هدي,3.544,هذيا ن كيما كنت نحكي لك إمبكري مدام هدى,True,v1,/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/extracted_wavs/sample_00010532.wav
+sample_00005635,حب حياتي بش يهزوها من قدام عينيا وانا نتفرج ساكت علاه,3.71,حب حياتي بش يهزوها من قدام عينيا وآنا نتفرج ساكت علاه,True,v1,/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/extracted_wavs/sample_00005635.wav
+sample_00016578,الي موجودة عالنساء السودوات فالعالم ككل,4.031,إلي موجودة عالنساء السودوات فالعالم ككل,True,v1,/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/extracted_wavs/sample_00016578.wav
+sample_00010104,انا نعمل ستوب اللي يجي بعدي يمشي واللي يجي قدامي يمشي كنا هكا ناس كثيرين نمشيوا,5.443,آنا نعمل ستوب اللي يجي بعدي يمشي واللي يجي قدامي يمشي كنا هكا ناس كثيرين نمشيوا,True,v1,/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/extracted_wavs/sample_00010104.wav

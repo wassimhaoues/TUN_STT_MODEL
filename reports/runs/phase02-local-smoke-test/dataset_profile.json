@@ -1,0 +1,42 @@
+{
+  "train": {
+    "split_name": "train",
+    "source_csv": "/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/metadata_train.csv",
+    "selected_rows": 8,
+    "requested_rows": 8,
+    "total_available_rows": 18648,
+    "total_hours": 0.007,
+    "min_duration": 0.961,
+    "median_duration": 3.446,
+    "max_duration": 5.443,
+    "normalization_version": "v1",
+    "sample_ids": [
+      "sample_00011842",
+      "sample_00009936",
+      "sample_00006807",
+      "sample_00018132",
+      "sample_00010532",
+      "sample_00005635",
+      "sample_00016578",
+      "sample_00010104"
+    ]
+  },
+  "valid": {
+    "split_name": "valid",
+    "source_csv": "/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/metadata_valid.csv",
+    "selected_rows": 4,
+    "requested_rows": 4,
+    "total_available_rows": 1036,
+    "total_hours": 0.005,
+    "min_duration": 3.191,
+    "median_duration": 3.925,
+    "max_duration": 5.66,
+    "normalization_version": "v1",
+    "sample_ids": [
+      "sample_00005592",
+      "sample_00003909",
+      "sample_00003946",
+      "sample_00005506"
+    ]
+  }
+}

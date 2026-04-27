@@ -22,7 +22,7 @@ htmlcov/
 .DS_Store
 
 logs/
-runs/
+/runs/
 wandb/
 checkpoints/
 models/
