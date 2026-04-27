@@ -1,0 +1,10 @@
+data-env/
+train-env/
+.env.*
+.env
+!.env.example
+dataset/extracted_wavs/*
+!dataset/extracted_wavs/.gitkeep
+
+
+

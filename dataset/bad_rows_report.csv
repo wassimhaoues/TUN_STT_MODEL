@@ -1,0 +1,154 @@
+row_index,id,text,duration,problems
+197,sample_00000197,voilà,0.426,too_short
+320,sample_00000320,شاشية,0.481,too_short
+429,sample_00000429,باهي,0.405,too_short
+657,sample_00000657,أه,0.259,too_short
+675,sample_00000675,الله,0.348,too_short
+677,sample_00000677,alors,0.26,too_short
+727,sample_00000727,alors,0.491,too_short
+740,sample_00000740,باهي,0.438,too_short
+744,sample_00000744,alors,0.467,too_short
+1092,sample_00001092,next,0.48,too_short
+1104,sample_00001104,شنوا الحكاية متاعكم قالوا لي ساهل ياخي آ كي إنحط آنا des capteurs piézoélectrique آكا اللي كي تنزل هكا تعمل l'énergie ونبدا نمشي ياخي مش نخلق في ال l'électricité صحيح كي إنحط فيهم batterie كيما آكا ال batterie اللي تستعملوا فيها مع التاليفون إنوليش j'emmagasine électricité قتلهم صحيح أي عاد c'est simple قالوا لي إنوليوا نعملوا des talents إنحطوا فيهم آ إنحطوهم في الواحد إنحطوا usb نهارة اللي يوفى التاليفون décharge إنلصقه هنا إنحطه هنا وإنعمره بصباطي,30.503,too_long
+1260,sample_00001260,دخلت,0.451,too_short
+1291,sample_00001291,قتله أي,0.353,too_short
+1474,sample_00001474,رجعوا,0.355,too_short
+1480,sample_00001480,ساهلة,0.358,too_short
+1522,sample_00001522,مخرجة,0.455,too_short
+1548,sample_00001548,voilà,0.442,too_short
+1583,sample_00001583,إنو,0.386,too_short
+1598,sample_00001598,آما,0.35,too_short
+1634,sample_00001634,إنو,0.462,too_short
+1644,sample_00001644,merci,0.437,too_short
+1660,sample_00001660,خلي خلي,0.392,too_short
+1784,sample_00001784,أي,0.34,too_short
+1790,sample_00001790,قاعد نلعب,0.48,too_short
+1864,sample_00001864,كهو,0.48,too_short
+1867,sample_00001867,أكاكا,0.34,too_short
+1896,sample_00001896,موش لازم,0.44,too_short
+1939,sample_00001939,باهي,0.46,too_short
+2010,sample_00002010,إنسيتها,0.42,too_short
+2012,sample_00002012,أوكي,0.48,too_short
+2045,sample_00002045,لا,0.378,too_short
+2307,sample_00002307,merci,0.402,too_short
+2385,sample_00002385,منها,0.428,too_short
+2619,sample_00002619,bon,0.375,too_short
+2751,sample_00002751,mais,0.277,too_short
+2763,sample_00002763,mais,0.357,too_short
+3037,sample_00003037,merci,0.465,too_short
+3425,sample_00003425,باهي,0.432,too_short
+3551,sample_00003551,إنت,0.363,too_short
+3572,sample_00003572,تعدى,0.298,too_short
+4280,sample_00004280,باهي,0.433,too_short
+4368,sample_00004368,ça va,0.478,too_short
+4374,sample_00004374,أي,0.46,too_short
+4381,sample_00004381,باهي,0.38,too_short
+4449,sample_00004449,توا,0.371,too_short
+4487,sample_00004487,باهي,0.245,too_short
+4494,sample_00004494,وقتها بش تنجم إتديفلوبي الخدمة متاعك,0.119,too_short
+4506,sample_00004506,فهم,0.441,too_short
+4509,sample_00004509,باهي,0.445,too_short
+4525,sample_00004525,بدل,0.318,too_short
+4544,sample_00004544,أيا وينك,0.468,too_short
+4565,sample_00004565,باهي,0.36,too_short
+4567,sample_00004567,باهي,0.322,too_short
+4575,sample_00004575,تضحك,0.419,too_short
+4576,sample_00004576,باهي,0.408,too_short
+4582,sample_00004582,باهي,0.335,too_short
+4584,sample_00004584,oui,0.482,too_short
+4588,sample_00004588,أناهي,0.317,too_short
+4593,sample_00004593,باهي,0.187,too_short
+4594,sample_00004594,باهي,0.248,too_short
+4609,sample_00004609,باهي,0.194,too_short
+4652,sample_00004652,باهي,0.438,too_short
+4676,sample_00004676,شد لحظة,0.395,too_short
+4680,sample_00004680,باهي,0.264,too_short
+4681,sample_00004681,merci,0.237,too_short
+4683,sample_00004683,لا لا,0.462,too_short
+4684,sample_00004684,باهي,0.118,too_short
+4691,sample_00004691,باهي,0.36,too_short
+4758,sample_00004758,لحظة,0.209,too_short
+4795,sample_00004795,من ناحية,0.393,too_short
+4887,sample_00004887,كهو,0.393,too_short
+4895,sample_00004895,bonjour,0.459,too_short
+4896,sample_00004896,voilà,0.477,too_short
+4915,sample_00004915,bon,0.319,too_short
+5570,sample_00005570,والله,0.342,too_short
+5920,sample_00005920,enfin ب,0.442,too_short
+6149,sample_00006149,merci,0.42,too_short
+6287,sample_00006287,merci,0.298,too_short
+6810,sample_00006810,باهي,0.318,too_short
+7102,sample_00007102,باهي,0.054,too_short
+8175,sample_00008175,oui,0.46,too_short
+8395,sample_00008395,نعم,0.413,too_short
+8444,sample_00008444,نعم,0.354,too_short
+8554,sample_00008554,bon,0.482,too_short
+8610,sample_00008610,و,0.489,too_short
+8679,sample_00008679,باهي,0.38,too_short
+9756,sample_00009756,آ,0.485,too_short
+9812,sample_00009812,باهي,0.461,too_short
+9823,sample_00009823,باهي,0.323,too_short
+10147,sample_00010147,إذا,0.492,too_short
+10151,sample_00010151,أه,0.394,too_short
+10165,sample_00010165,شكرا,0.495,too_short
+10337,sample_00010337,كيفاش,0.462,too_short
+10431,sample_00010431,علاش,0.496,too_short
+10473,sample_00010473,هو,0.493,too_short
+10869,sample_00010869,نعم,0.492,too_short
+10890,sample_00010890,أوكي,0.461,too_short
+11610,sample_00011610,زادا,0.472,too_short
+11641,sample_00011641,باهي,0.233,too_short
+11650,sample_00011650,تفتق,0.323,too_short
+11657,sample_00011657,أوكي,0.391,too_short
+11678,sample_00011678,voilà,0.322,too_short
+11730,sample_00011730,إمشي,0.322,too_short
+11783,sample_00011783,باهي,0.201,too_short
+11799,sample_00011799,مشيت,0.493,too_short
+11828,sample_00011828,et,0.362,too_short
+12096,sample_00012096,باهي,0.48,too_short
+12130,sample_00012130,باهي,0.44,too_short
+12141,sample_00012141,مثلا,0.48,too_short
+12203,sample_00012203,نهار,0.363,too_short
+12419,sample_00012419,donc,0.473,too_short
+12561,sample_00012561,oui,0.451,too_short
+12563,sample_00012563,باهي,0.417,too_short
+12570,sample_00012570,حتى آنا,0.48,too_short
+12582,sample_00012582,قهرة,0.414,too_short
+12592,sample_00012592,باهي,0.325,too_short
+12611,sample_00012611,لكن,0.401,too_short
+12797,sample_00012797,إن شاء الله أ معنتها يكون كلامها أ واضح خاطر يلخص شوية شنوا كنا نحكيوا من بكري في إنو آ معناها العنصرية ماهياش أنك تبدل ال comportement متاعك أكهو راهي بنى إجتماعية معناتها ومؤسسات وإنو إنجموا إناضلوا خارج إطار آ آ رأسمالي وإنو الإستعمار راهو مازال موجود إلى اليوم ولازمه يكون في آ ال ال في أعلى آ آ معناتها ولا في في في في آ صدارة آ اللا ال الأجندات السياسية متاعنا,30.323,too_long
+12948,sample_00012948,نعم,0.358,too_short
+12978,sample_00012978,أحنا,0.482,too_short
+13094,sample_00013094,علاش,0.473,too_short
+13144,sample_00013144,وم اليوم تو حتى بعد الثورة معنتها أكثر حاجات إنركزوا عليهم ت تسمع في الأخبار تسمع archéologie أ هاو آ شدوا جماعة ي يسرقوا في الآثار هاو شدوا جماعة أخاطر عنده أ آثار في داره وقت لي كان فيكم شكون يسكن بحذا أي موقع أثري معنتها كان فيكم شكون يسكن في carthage ولا في أ بحذا تعرفوا اللي في دياركم معنتها عندكم لاثار مطيشة م ماهيش حاجة م تسمع بعض ساعات حاجة يقول لك نص colonne مطيشة أم ماهيش حاجة كبيرة معنتها وفي اللخر لاثار معنتها القطع لثرية ماعندهاش قيمة كيما اللا كيما ال الموقع الأثري بيده,31.476,too_long
+13153,sample_00013153,إلعنا النهضة معنتها كنا راقدين قمنا donc كي عملوا النهضة في القرن اللا الثامن عشر آ بدا التفكير بداوا المفكرين وكل شي كلاوا الكف لول مع لستعمار عاودت نهضة أخرى لي هي مع اللا الحركات التحرر وكل شي جا الكف الثاني بال ko معنتها اللا الديكتاتوريات لي كانت اللي أم تحكم فينا عام إلتالي آ واللي مازالت تحكم فينا واللي مالمفروض بش يطيروا الكل معنتها أحنا توا في النهضة يظهر لي اللا الثالثة حاجة هكا آ الخلافة السادسة والنهضة اللا الثالثة,30.394,too_long
+13317,sample_00013317,لهنا,0.486,too_short
+13321,sample_00013321,donc,0.425,too_short
+13330,sample_00013330,شعملت,0.491,too_short
+13521,sample_00013521,yeah,0.477,too_short
+13539,sample_00013539,merci,0.37,too_short
+14045,sample_00014045,هو,0.478,too_short
+14098,sample_00014098,وينه,0.422,too_short
+14099,sample_00014099,أهوكا,0.42,too_short
+14320,sample_00014320,bon,0.226,too_short
+14528,sample_00014528,طار,0.386,too_short
+14941,sample_00014941,لا لا,0.358,too_short
+14962,sample_00014962,يمشي,0.358,too_short
+14965,sample_00014965,أوكي,0.382,too_short
+14969,sample_00014969,حل,0.221,too_short
+15032,sample_00015032,بلقاسم,0.442,too_short
+15040,sample_00015040,من هي,0.4,too_short
+15054,sample_00015054,أه,0.271,too_short
+15059,sample_00015059,نجحت,0.363,too_short
+15062,sample_00015062,هذايا,0.482,too_short
+15063,sample_00015063,كمل,0.422,too_short
+15076,sample_00015076,طيب,0.437,too_short
+15077,sample_00015077,من هو,0.499,too_short
+15089,sample_00015089,باهي,0.343,too_short
+15102,sample_00015102,أيه,0.237,too_short
+15217,sample_00015217,en fait,0.391,too_short
+15434,sample_00015434,عاود أرجع,0.416,too_short
+15503,sample_00015503,مش هكاكا,0.482,too_short
+17643,sample_00017643,﻿كيفاش,0.488,too_short
+17894,sample_00017894,﻿بحذاك اليوم,0.387,too_short
+19364,sample_00019364,عجب,0.461,too_short
