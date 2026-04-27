@@ -24,9 +24,25 @@ make smoke-whisper
 make baseline
 ```
 
+## Baseline Tracking
+
+The baseline script now records a tracked experiment report in `reports/` every time it runs.
+
+```bash
+python training/baseline_test.py
+python training/baseline_test.py --run-name baseline-start --notes "raw whisper-small before fine-tuning"
+```
+
+Each run writes:
+
+- `reports/experiment_history.csv`: one row per experiment run
+- `reports/runs/<run_name>/summary.md`: readable baseline summary
+- `reports/runs/<run_name>/predictions.csv`: per-sample predictions for that run
+
 ## Project Layout
 
 - `dataset/`: metadata preparation, validation, and split scripts.
+- `reports/`: tracked baseline and experiment history for later comparison.
 - `training/`: model smoke tests and baseline transcription checks.
 - `tests/`: fast repo sanity checks for CI and local development.
 - `.vscode/`: editor settings, recommended extensions, and one-click tasks.

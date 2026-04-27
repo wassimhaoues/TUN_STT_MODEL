@@ -1,0 +1,2 @@
+run_name,run_type,model_name,eval_scope,n_samples,wer,cer,device,language,task,source_csv,created_at,notes
+whisper-small-baseline-initial,baseline,openai/whisper-small,test_head_20,20,1.391489,0.879585,cuda:0,arabic,transcribe,dataset/metadata_test.csv,2026-04-27T20:42:20.926596+01:00,Raw Whisper Small baseline before fine-tuning.
