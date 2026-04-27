@@ -1,6 +1,7 @@
 import argparse
 import csv
 import re
+import sys
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
@@ -13,6 +14,11 @@ from scipy.signal import resample_poly
 from transformers import WhisperForConditionalGeneration, WhisperProcessor
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
+
+from dataset.text_normalization import NORMALIZATION_VERSION, normalize_transcript  # noqa: E402
+
 DATASET_DIR = ROOT_DIR / "dataset"
 WAV_DIR = DATASET_DIR / "extracted_wavs"
 TEST_CSV = DATASET_DIR / "metadata_test.csv"
@@ -192,6 +198,7 @@ def build_summary_markdown(result: BaselineRunResult) -> str:
             f"- Device: `{result.device}`",
             f"- Language: `{result.language}`",
             f"- Task: `{result.task}`",
+            f"- Metric normalization: `{NORMALIZATION_VERSION}`",
             "",
             "## Metrics",
             "",
@@ -294,8 +301,8 @@ def run_baseline(samples: int, run_name: str | None = None, notes: str = "") -> 
             audio_input=load_audio_for_asr(wav_path),
             model_device=model_device,
         )
-        predictions.append(prediction)
-        references.append(reference)
+        predictions.append(normalize_transcript(prediction))
+        references.append(normalize_transcript(reference))
         prediction_rows.append(
             PredictionRecord(
                 id=str(row.id),
