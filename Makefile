@@ -3,7 +3,7 @@ PIP := $(PYTHON) -m pip
 RUFF := $(PYTHON) -m ruff
 PYTEST := $(PYTHON) -m pytest
 
-.PHONY: install-runtime install-dev lint format format-check test check validate-dataset check-dataset smoke-whisper baseline clean
+.PHONY: install-runtime install-dev lint format format-check test check validate-dataset check-dataset smoke-whisper baseline train-smoke clean
 
 install-runtime:
 	$(PIP) install -r requirements/runtime.txt
@@ -36,6 +36,9 @@ smoke-whisper:
 
 baseline:
 	$(PYTHON) training/baseline_test.py
+
+train-smoke:
+	$(PYTHON) training/train_whisper_small.py
 
 clean:
 	rm -rf .pytest_cache .ruff_cache __pycache__ htmlcov .coverage coverage.xml
