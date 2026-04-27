@@ -5,19 +5,16 @@ import sys
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-
-import pandas as pd
-import soundfile as sf
-import torch
-from evaluate import load
-from scipy.signal import resample_poly
-from transformers import WhisperForConditionalGeneration, WhisperProcessor
+from typing import TYPE_CHECKING
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
 if str(ROOT_DIR) not in sys.path:
     sys.path.insert(0, str(ROOT_DIR))
 
 from dataset.text_normalization import NORMALIZATION_VERSION, normalize_transcript  # noqa: E402
+
+if TYPE_CHECKING:
+    from transformers import WhisperForConditionalGeneration, WhisperProcessor
 
 DATASET_DIR = ROOT_DIR / "dataset"
 WAV_DIR = DATASET_DIR / "extracted_wavs"
@@ -110,6 +107,8 @@ def build_run_name(model_name: str, created_at: datetime) -> str:
 
 
 def get_device_config() -> tuple[int, str]:
+    import torch
+
     if torch.cuda.is_available():
         return 0, f"cuda:{torch.cuda.current_device()}"
     return -1, "cpu"
@@ -124,6 +123,9 @@ def format_metric(value: float) -> str:
 
 
 def load_audio_for_asr(wav_path: Path) -> dict[str, object]:
+    import soundfile as sf
+    from scipy.signal import resample_poly
+
     audio, sample_rate = sf.read(str(wav_path))
     if getattr(audio, "ndim", 1) > 1:
         audio = audio.mean(axis=1)
@@ -137,11 +139,13 @@ def load_audio_for_asr(wav_path: Path) -> dict[str, object]:
 
 
 def transcribe_audio(
-    processor: WhisperProcessor,
-    model: WhisperForConditionalGeneration,
+    processor: "WhisperProcessor",
+    model: "WhisperForConditionalGeneration",
     audio_input: dict[str, object],
     model_device: str,
 ) -> str:
+    import torch
+
     inputs = processor(
         audio_input["raw"],
         sampling_rate=audio_input["sampling_rate"],
@@ -218,7 +222,11 @@ def append_history_row(history_path: Path, result: BaselineRunResult) -> None:
     write_header = not history_path.exists()
 
     with history_path.open("a", encoding="utf-8", newline="") as handle:
-        writer = csv.DictWriter(handle, fieldnames=HISTORY_COLUMNS)
+        writer = csv.DictWriter(
+            handle,
+            fieldnames=HISTORY_COLUMNS,
+            lineterminator="\n",
+        )
         if write_header:
             writer.writeheader()
         writer.writerow(build_history_row(result))
@@ -231,6 +239,7 @@ def write_predictions_csv(predictions_path: Path, predictions: list[PredictionRe
         writer = csv.DictWriter(
             handle,
             fieldnames=["id", "wav_path", "reference", "prediction"],
+            lineterminator="\n",
         )
         writer.writeheader()
         for record in predictions:
@@ -261,6 +270,10 @@ def save_run_report(
 
 
 def run_baseline(samples: int, run_name: str | None = None, notes: str = "") -> BaselineRunResult:
+    import pandas as pd
+    from evaluate import load
+    from transformers import WhisperForConditionalGeneration, WhisperProcessor
+
     if samples <= 0:
         raise ValueError("--samples must be greater than 0.")
 
