@@ -1,21 +1,27 @@
 import torch
-from transformers import WhisperProcessor, WhisperForConditionalGeneration
+from transformers import WhisperForConditionalGeneration, WhisperProcessor
 
 MODEL_NAME = "openai/whisper-small"
 
-processor = WhisperProcessor.from_pretrained(
-    MODEL_NAME,
-    language="arabic",
-    task="transcribe",
-)
 
-model = WhisperForConditionalGeneration.from_pretrained(MODEL_NAME)
+def main() -> None:
+    WhisperProcessor.from_pretrained(
+        MODEL_NAME,
+        language="arabic",
+        task="transcribe",
+    )
 
-print("Model loaded:", MODEL_NAME)
-print("CUDA available:", torch.cuda.is_available())
+    model = WhisperForConditionalGeneration.from_pretrained(MODEL_NAME)
 
-if torch.cuda.is_available():
-    model = model.to("cuda")
-    print("GPU:", torch.cuda.get_device_name(0))
+    print("Model loaded:", MODEL_NAME)
+    print("CUDA available:", torch.cuda.is_available())
 
-print("Whisper Small test passed.")
+    if torch.cuda.is_available():
+        model = model.to("cuda")
+        print("GPU:", torch.cuda.get_device_name(0))
+
+    print("Whisper Small test passed.")
+
+
+if __name__ == "__main__":
+    main()

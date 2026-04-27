@@ -1,0 +1,33 @@
+{
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+        "source.fixAll.ruff": "explicit",
+        "source.organizeImports.ruff": "explicit"
+    },
+    "files.exclude": {
+        "**/.pytest_cache": true,
+        "**/.ruff_cache": true,
+        "**/__pycache__": true,
+        "data-env": true,
+        "train-env": true
+    },
+    "python.analysis.extraPaths": [
+        "${workspaceFolder}"
+    ],
+    "python.analysis.typeCheckingMode": "basic",
+    "python.defaultInterpreterPath": "${workspaceFolder}/train-env/bin/python",
+    "python.testing.pytestArgs": [
+        "tests"
+    ],
+    "python.testing.pytestEnabled": true,
+    "python.testing.unittestEnabled": false,
+    "python.terminal.activateEnvironment": true,
+    "ruff.nativeServer": "on",
+    "search.exclude": {
+        "data-env": true,
+        "train-env": true,
+        "dataset/extracted_wavs": true,
+        "outputs": true
+    },
+    "terminal.integrated.cwd": "${workspaceFolder}"
+}

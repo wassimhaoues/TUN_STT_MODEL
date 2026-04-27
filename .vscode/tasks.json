@@ -1,0 +1,43 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Lint",
+            "type": "shell",
+            "command": "make lint",
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "Format",
+            "type": "shell",
+            "command": "make format",
+            "problemMatcher": []
+        },
+        {
+            "label": "Test",
+            "type": "shell",
+            "command": "make test",
+            "group": "test",
+            "problemMatcher": []
+        },
+        {
+            "label": "Validate Dataset",
+            "type": "shell",
+            "command": "make validate-dataset",
+            "problemMatcher": []
+        },
+        {
+            "label": "Check Dataset Splits",
+            "type": "shell",
+            "command": "make check-dataset",
+            "problemMatcher": []
+        },
+        {
+            "label": "Smoke Test Whisper Small",
+            "type": "shell",
+            "command": "make smoke-whisper",
+            "problemMatcher": []
+        }
+    ]
+}

@@ -1,34 +1,42 @@
 from pathlib import Path
+
 import pandas as pd
 import soundfile as sf
 
-DATASET_DIR = Path("dataset")
+ROOT_DIR = Path(__file__).resolve().parent.parent
+DATASET_DIR = ROOT_DIR / "dataset"
 WAV_DIR = DATASET_DIR / "extracted_wavs"
 
-for split in ["train", "valid", "test"]:
-    csv_path = DATASET_DIR / f"metadata_{split}.csv"
 
-    if not csv_path.exists():
-        raise FileNotFoundError(f"Missing: {csv_path}")
+def main() -> None:
+    for split in ["train", "valid", "test"]:
+        csv_path = DATASET_DIR / f"metadata_{split}.csv"
 
-    df = pd.read_csv(csv_path)
+        if not csv_path.exists():
+            raise FileNotFoundError(f"Missing: {csv_path}")
 
-    print(f"\n=== {split.upper()} ===")
-    print("Rows:", len(df))
-    print("Columns:", df.columns.tolist())
-    print("Total hours:", round(df["duration"].sum() / 3600, 2))
-    print("First row:")
-    print(df.iloc[0])
+        df = pd.read_csv(csv_path)
 
-    sample_id = df.iloc[0]["id"]
-    wav_path = WAV_DIR / f"{sample_id}.wav"
+        print(f"\n=== {split.upper()} ===")
+        print("Rows:", len(df))
+        print("Columns:", df.columns.tolist())
+        print("Total hours:", round(df["duration"].sum() / 3600, 2))
+        print("First row:")
+        print(df.iloc[0])
 
-    if not wav_path.exists():
-        raise FileNotFoundError(f"Missing WAV: {wav_path}")
+        sample_id = df.iloc[0]["id"]
+        wav_path = WAV_DIR / f"{sample_id}.wav"
 
-    info = sf.info(str(wav_path))
-    print("Sample WAV:", wav_path)
-    print("Sample rate:", info.samplerate)
-    print("Duration:", round(info.duration, 3))
+        if not wav_path.exists():
+            raise FileNotFoundError(f"Missing WAV: {wav_path}")
 
-print("\nDataset check passed.")
+        info = sf.info(str(wav_path))
+        print("Sample WAV:", wav_path)
+        print("Sample rate:", info.samplerate)
+        print("Duration:", round(info.duration, 3))
+
+    print("\nDataset check passed.")
+
+
+if __name__ == "__main__":
+    main()
