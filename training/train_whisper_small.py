@@ -18,6 +18,12 @@ if str(ROOT_DIR) not in sys.path:
     sys.path.insert(0, str(ROOT_DIR))
 
 from dataset.text_normalization import NORMALIZATION_VERSION, normalize_transcript  # noqa: E402
+from training.decoding import (  # noqa: E402
+    DECODING_PRESETS,
+    DEFAULT_DECODING_PRESET,
+    apply_decoding_config,
+    resolve_decoding_config,
+)
 
 ProcessorLike = Any
 EvalPredictionLike = Any
@@ -135,6 +141,11 @@ class TrainingConfig:
     save_total_limit: int
     dataloader_num_workers: int
     generation_max_length: int
+    decoding_preset: str
+    generation_num_beams: int
+    generation_length_penalty: float
+    generation_no_repeat_ngram_size: int
+    generation_repetition_penalty: float
     max_duration_seconds: float
     notes: str
     resume_from_checkpoint: str
@@ -340,6 +351,32 @@ def parse_args() -> argparse.Namespace:
         ),
     )
     parser.add_argument(
+        "--decoding-preset",
+        choices=list(DECODING_PRESETS),
+        default=DEFAULT_DECODING_PRESET,
+        help="Tracked decoding preset for eval-time generation.",
+    )
+    parser.add_argument(
+        "--generation-num-beams",
+        type=int,
+        help="Optional override for generation beam count.",
+    )
+    parser.add_argument(
+        "--generation-length-penalty",
+        type=float,
+        help="Optional override for generation length penalty.",
+    )
+    parser.add_argument(
+        "--generation-no-repeat-ngram-size",
+        type=int,
+        help="Optional override for no-repeat ngram size. Use 0 to disable.",
+    )
+    parser.add_argument(
+        "--generation-repetition-penalty",
+        type=float,
+        help="Optional override for repetition penalty.",
+    )
+    parser.add_argument(
         "--max-duration-seconds",
         type=float,
         default=DEFAULT_MAX_DURATION_SECONDS,
@@ -399,6 +436,16 @@ def validate_training_config(config: TrainingConfig) -> None:
         raise ValueError("max_duration_seconds must be greater than 0.")
     if config.precision not in {"auto", "bf16", "fp16", "fp32"}:
         raise ValueError("precision must be one of: auto, bf16, fp16, fp32.")
+    resolve_decoding_config(
+        preset=config.decoding_preset,
+        language=config.language,
+        task=config.task,
+        generation_max_length=config.generation_max_length,
+        generation_num_beams=config.generation_num_beams,
+        generation_length_penalty=config.generation_length_penalty,
+        generation_no_repeat_ngram_size=config.generation_no_repeat_ngram_size,
+        generation_repetition_penalty=config.generation_repetition_penalty,
+    )
 
 
 def get_git_commit() -> str:
@@ -436,6 +483,16 @@ def default_output_dir(run_name: str) -> str:
 def resolve_training_config(args: argparse.Namespace) -> TrainingConfig:
     created_at = datetime.now().astimezone()
     run_name = args.run_name or build_run_name(args.model_name, created_at)
+    decoding_config = resolve_decoding_config(
+        preset=args.decoding_preset,
+        language=args.language,
+        task=args.task,
+        generation_max_length=args.generation_max_length,
+        generation_num_beams=args.generation_num_beams,
+        generation_length_penalty=args.generation_length_penalty,
+        generation_no_repeat_ngram_size=args.generation_no_repeat_ngram_size,
+        generation_repetition_penalty=args.generation_repetition_penalty,
+    )
 
     config = TrainingConfig(
         run_name=run_name,
@@ -465,7 +522,12 @@ def resolve_training_config(args: argparse.Namespace) -> TrainingConfig:
         logging_steps=args.logging_steps,
         save_total_limit=args.save_total_limit,
         dataloader_num_workers=args.dataloader_num_workers,
-        generation_max_length=args.generation_max_length,
+        generation_max_length=decoding_config.generation_max_length,
+        decoding_preset=decoding_config.preset,
+        generation_num_beams=decoding_config.generation_num_beams,
+        generation_length_penalty=decoding_config.generation_length_penalty,
+        generation_no_repeat_ngram_size=decoding_config.generation_no_repeat_ngram_size,
+        generation_repetition_penalty=decoding_config.generation_repetition_penalty,
         max_duration_seconds=args.max_duration_seconds,
         notes=args.notes,
         resume_from_checkpoint=args.resume_from_checkpoint,
@@ -573,6 +635,7 @@ def build_history_row(
     note_segments.append(f"train_samples={config.train_samples}")
     note_segments.append(f"valid_samples={config.valid_samples}")
     note_segments.append(f"precision={environment.precision}")
+    note_segments.append(f"decoding_preset={config.decoding_preset}")
     note_segments.append(f"best_checkpoint={best_checkpoint or 'n/a'}")
     return {
         "run_name": config.run_name,
@@ -731,6 +794,15 @@ def build_summary_markdown(result: TrainingRunResult) -> str:
             f"- Torch: `{result.environment.torch_version}`",
             f"- Transformers: `{result.environment.transformers_version}`",
             f"- Datasets: `{result.environment.datasets_version}`",
+            "",
+            "## Decoding Policy",
+            "",
+            f"- Decoding preset: `{result.config.decoding_preset}`",
+            f"- Generation max length: `{result.config.generation_max_length}`",
+            f"- Generation beams: `{result.config.generation_num_beams}`",
+            f"- Length penalty: `{result.config.generation_length_penalty}`",
+            (f"- No-repeat ngram size: `{result.config.generation_no_repeat_ngram_size}`"),
+            (f"- Repetition penalty: `{result.config.generation_repetition_penalty}`"),
             "",
             "## Dataset Subsets",
             "",
@@ -1053,10 +1125,17 @@ def build_trainer(
         task=config.task,
     )
     model = WhisperForConditionalGeneration.from_pretrained(config.model_name)
-    model.generation_config.language = config.language
-    model.generation_config.task = config.task
-    model.generation_config.forced_decoder_ids = None
-    model.config.forced_decoder_ids = None
+    decoding_config = resolve_decoding_config(
+        preset=config.decoding_preset,
+        language=config.language,
+        task=config.task,
+        generation_max_length=config.generation_max_length,
+        generation_num_beams=config.generation_num_beams,
+        generation_length_penalty=config.generation_length_penalty,
+        generation_no_repeat_ngram_size=config.generation_no_repeat_ngram_size,
+        generation_repetition_penalty=config.generation_repetition_penalty,
+    )
+    apply_decoding_config(model, decoding_config)
 
     if config.gradient_checkpointing:
         model.config.use_cache = False
@@ -1104,6 +1183,7 @@ def build_trainer(
         save_total_limit=config.save_total_limit,
         predict_with_generate=True,
         generation_max_length=config.generation_max_length,
+        generation_num_beams=config.generation_num_beams,
         metric_for_best_model="wer",
         greater_is_better=False,
         load_best_model_at_end=True,

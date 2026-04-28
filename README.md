@@ -24,6 +24,8 @@ make smoke-whisper
 make baseline
 make train-smoke
 make eval-checkpoint
+make analyze-errors
+make build-phase05-manifests
 ```
 
 ## Baseline Tracking
@@ -86,6 +88,41 @@ python training/train_whisper_small.py --run-type phase03_full_finetune --train-
 python training/evaluate_checkpoint.py --model-path outputs/train_runs/<run_name> --samples 20
 python training/evaluate_checkpoint.py --model-path outputs/train_runs/<run_name> --samples 0
 ```
+
+## Phase 04 Evaluation And Error Analysis
+
+Phase 04 adds a repeatable error-analysis script that turns prediction CSVs into bucketed failure reports and a fixed manual-review set.
+
+```bash
+python training/analyze_errors.py \
+  --predictions-csv reports/runs/<evaluation_run_name>/predictions.csv \
+  --source-csv dataset/metadata_test.csv
+```
+
+Each analysis run writes next to the evaluation report:
+
+- `reports/runs/<evaluation_run_name>/error_analysis/summary.md`
+- `reports/runs/<evaluation_run_name>/error_analysis/bucket_summary.csv`
+- `reports/runs/<evaluation_run_name>/error_analysis/detailed_rows.csv`
+- `reports/runs/<evaluation_run_name>/error_analysis/manual_review_candidates.csv`
+
+## Phase 05 Targeted Improvements
+
+Phase 05 turns the Phase 4 findings into controlled experiments:
+
+- safer decoding to reduce repetition loops and catastrophic generation failures
+- targeted train-manifest expansion for code-switched and short clips
+
+Helpful commands:
+
+```bash
+python training/evaluate_checkpoint.py --help
+python dataset/build_phase05_manifests.py --help
+```
+
+Runbook:
+
+- [docs/phase05_targeted_improvements_runbook.md](/home/coworky/Study/Deeplearning/TUN_STT_MODEL/docs/phase05_targeted_improvements_runbook.md)
 
 ## Project Layout
 

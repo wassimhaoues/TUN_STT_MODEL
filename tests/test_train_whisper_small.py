@@ -66,6 +66,11 @@ def make_config(tmp_path: Path, run_name: str = "phase02-smoke") -> TrainingConf
         save_total_limit=2,
         dataloader_num_workers=2,
         generation_max_length=225,
+        decoding_preset="standard",
+        generation_num_beams=1,
+        generation_length_penalty=1.0,
+        generation_no_repeat_ngram_size=0,
+        generation_repetition_penalty=1.0,
         max_duration_seconds=30.0,
         notes="phase 02 smoke",
         resume_from_checkpoint="",
@@ -201,6 +206,8 @@ def test_phase02_artifacts_and_history_are_written(tmp_path: Path) -> None:
     assert "`openai/whisper-small`" in summary
     assert "`0.456789`" in summary
     assert "checkpoint-10" in summary
+    assert "Decoding preset" in summary
+    assert "`standard`" in summary
 
     with (Path(config.reports_dir) / "experiment_history.csv").open(
         "r",
@@ -215,6 +222,7 @@ def test_phase02_artifacts_and_history_are_written(tmp_path: Path) -> None:
     assert history_rows[0]["wer"] == "0.456789"
     assert history_rows[0]["n_samples"] == "3"
     assert "train_samples=3" in history_rows[0]["notes"]
+    assert "decoding_preset=standard" in history_rows[0]["notes"]
 
 
 def test_resolve_precision_plan_prefers_bf16_then_fp16_then_fp32() -> None:

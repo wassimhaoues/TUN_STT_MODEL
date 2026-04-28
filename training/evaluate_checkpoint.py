@@ -22,6 +22,13 @@ from training.baseline_test import (  # noqa: E402
     load_audio_for_asr,
     write_predictions_csv,
 )
+from training.decoding import (  # noqa: E402
+    DECODING_PRESETS,
+    DEFAULT_DECODING_PRESET,
+    apply_decoding_config,
+    build_generate_kwargs,
+    resolve_decoding_config,
+)
 
 if TYPE_CHECKING:
     from transformers import WhisperForConditionalGeneration, WhisperProcessor
@@ -52,6 +59,12 @@ class EvaluationRunResult:
     source_csv: str
     created_at: str
     notes: str
+    decoding_preset: str
+    generation_max_length: int
+    generation_num_beams: int
+    generation_length_penalty: float
+    generation_no_repeat_ngram_size: int
+    generation_repetition_penalty: float
     predictions: list[PredictionRecord]
 
 
@@ -99,6 +112,34 @@ def parse_args() -> argparse.Namespace:
         default="",
         help="Optional notes to save in experiment history and summary.",
     )
+    parser.add_argument(
+        "--generation-max-length",
+        type=int,
+        default=225,
+        help="Generation max length for checkpoint decoding.",
+    )
+    parser.add_argument(
+        "--decoding-preset",
+        choices=list(DECODING_PRESETS),
+        default=DEFAULT_DECODING_PRESET,
+        help="Tracked decoding preset for checkpoint evaluation.",
+    )
+    parser.add_argument("--generation-num-beams", type=int, help="Optional beam-count override.")
+    parser.add_argument(
+        "--generation-length-penalty",
+        type=float,
+        help="Optional length-penalty override.",
+    )
+    parser.add_argument(
+        "--generation-no-repeat-ngram-size",
+        type=int,
+        help="Optional no-repeat ngram override. Use 0 to disable.",
+    )
+    parser.add_argument(
+        "--generation-repetition-penalty",
+        type=float,
+        help="Optional repetition-penalty override.",
+    )
     return parser.parse_args()
 
 
@@ -124,6 +165,10 @@ def get_eval_scope(csv_path: Path | str, sample_count: int, total_rows: int) -> 
 
 
 def build_history_row(result: EvaluationRunResult) -> dict[str, str]:
+    note_segments = [result.notes.strip()] if result.notes.strip() else []
+    note_segments.append(f"decoding_preset={result.decoding_preset}")
+    note_segments.append(f"num_beams={result.generation_num_beams}")
+    note_segments.append(f"no_repeat_ngram_size={result.generation_no_repeat_ngram_size}")
     return {
         "run_name": result.run_name,
         "run_type": result.run_type,
@@ -137,7 +182,7 @@ def build_history_row(result: EvaluationRunResult) -> dict[str, str]:
         "task": result.task,
         "source_csv": result.source_csv,
         "created_at": result.created_at,
-        "notes": result.notes,
+        "notes": " | ".join(note_segments),
     }
 
 
@@ -178,6 +223,15 @@ def build_summary_markdown(result: EvaluationRunResult) -> str:
             f"- Task: `{result.task}`",
             f"- Metric normalization: `{NORMALIZATION_VERSION}`",
             "",
+            "## Decoding Policy",
+            "",
+            f"- Decoding preset: `{result.decoding_preset}`",
+            f"- Generation max length: `{result.generation_max_length}`",
+            f"- Generation beams: `{result.generation_num_beams}`",
+            f"- Length penalty: `{result.generation_length_penalty}`",
+            (f"- No-repeat ngram size: `{result.generation_no_repeat_ngram_size}`"),
+            (f"- Repetition penalty: `{result.generation_repetition_penalty}`"),
+            "",
             "## Metrics",
             "",
             f"- WER: `{format_metric(result.wer)}`",
@@ -213,8 +267,7 @@ def transcribe_audio(
     model: WhisperForConditionalGeneration,
     audio_input: dict[str, object],
     model_device: str,
-    language: str,
-    task: str,
+    generation_kwargs: dict[str, object],
 ) -> str:
     import torch
 
@@ -226,11 +279,7 @@ def transcribe_audio(
     input_features = inputs.input_features.to(model_device)
 
     with torch.no_grad():
-        generated_ids = model.generate(
-            input_features,
-            language=language,
-            task=task,
-        )
+        generated_ids = model.generate(input_features, **generation_kwargs)
 
     return processor.batch_decode(generated_ids, skip_special_tokens=True)[0]
 
@@ -244,6 +293,12 @@ def run_evaluation(
     language: str,
     task: str,
     notes: str,
+    generation_max_length: int,
+    decoding_preset: str,
+    generation_num_beams: int | None,
+    generation_length_penalty: float | None,
+    generation_no_repeat_ngram_size: int | None,
+    generation_repetition_penalty: float | None,
 ) -> EvaluationRunResult:
     import pandas as pd
     from evaluate import load
@@ -257,6 +312,16 @@ def run_evaluation(
     created_at = datetime.now().astimezone()
     resolved_run_name = run_name or build_run_name(model_path, created_at, samples)
     device_id, device_label = get_device_config()
+    decoding_config = resolve_decoding_config(
+        preset=decoding_preset,
+        language=language,
+        task=task,
+        generation_max_length=generation_max_length,
+        generation_num_beams=generation_num_beams,
+        generation_length_penalty=generation_length_penalty,
+        generation_no_repeat_ngram_size=generation_no_repeat_ngram_size,
+        generation_repetition_penalty=generation_repetition_penalty,
+    )
 
     full_df = pd.read_csv(source_csv)
     if full_df.empty:
@@ -272,13 +337,11 @@ def run_evaluation(
         task=task,
     )
     model = WhisperForConditionalGeneration.from_pretrained(model_path)
-    model.generation_config.language = language
-    model.generation_config.task = task
-    model.generation_config.forced_decoder_ids = None
-    model.config.forced_decoder_ids = None
+    apply_decoding_config(model, decoding_config)
     model_device = "cuda" if device_id >= 0 else "cpu"
     model = model.to(model_device)
     model.eval()
+    generation_kwargs = build_generate_kwargs(decoding_config)
 
     wer_metric = load("wer")
     cer_metric = load("cer")
@@ -297,8 +360,7 @@ def run_evaluation(
             model=model,
             audio_input=load_audio_for_asr(wav_path),
             model_device=model_device,
-            language=language,
-            task=task,
+            generation_kwargs=generation_kwargs,
         )
         predictions.append(normalize_transcript(prediction))
         references.append(normalize_transcript(reference))
@@ -333,6 +395,12 @@ def run_evaluation(
         source_csv=str(source_csv),
         created_at=created_at.isoformat(),
         notes=notes,
+        decoding_preset=decoding_config.preset,
+        generation_max_length=decoding_config.generation_max_length,
+        generation_num_beams=decoding_config.generation_num_beams,
+        generation_length_penalty=decoding_config.generation_length_penalty,
+        generation_no_repeat_ngram_size=decoding_config.generation_no_repeat_ngram_size,
+        generation_repetition_penalty=decoding_config.generation_repetition_penalty,
         predictions=prediction_rows,
     )
 
@@ -348,6 +416,12 @@ def main() -> None:
         language=args.language,
         task=args.task,
         notes=args.notes,
+        generation_max_length=args.generation_max_length,
+        decoding_preset=args.decoding_preset,
+        generation_num_beams=args.generation_num_beams,
+        generation_length_penalty=args.generation_length_penalty,
+        generation_no_repeat_ngram_size=args.generation_no_repeat_ngram_size,
+        generation_repetition_penalty=args.generation_repetition_penalty,
     )
     summary_path, predictions_path = save_run_report(result)
 

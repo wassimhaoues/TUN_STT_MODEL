@@ -10,13 +10,13 @@ The roadmap is tailored to the current project state:
 - Current baseline report: `reports/runs/whisper-small-baseline-initial/summary.md`
 - Baseline metrics on `test_head_20`: `WER 1.391489`, `CER 0.879585`
 - Dataset size today:
-  - Train: `18,648` rows, about `27.66 h`
-  - Valid: `1,036` rows, about `1.56 h`
-  - Test: `1,036` rows, about `1.54 h`
+    - Train: `18,648` rows, about `27.66 h`
+    - Valid: `1,036` rows, about `1.56 h`
+    - Test: `1,036` rows, about `1.54 h`
 - Hardware target:
-  - GPU: `RTX 5070 Laptop GPU`, about `8 GB VRAM`
-  - RAM: `15 GB`
-  - CPU: `Intel i7-14650HX`
+    - GPU: `RTX 5070 Laptop GPU`, about `8 GB VRAM`
+    - RAM: `15 GB`
+    - CPU: `Intel i7-14650HX`
 
 This plan follows current guidance from the Whisper paper, Hugging Face Whisper fine-tuning guidance, Hugging Face `datasets` audio processing docs, Hugging Face `Trainer` docs, and PyTorch mixed-precision docs. See the references section at the end.
 
@@ -25,24 +25,24 @@ This plan follows current guidance from the Whisper paper, Hugging Face Whisper 
 These rules apply across all phases:
 
 1. Never touch the test split while making training decisions.
-   - `metadata_test.csv` is for locked evaluation only.
-   - Fast iteration may use `test_head_20` for continuity with the baseline, but final claims must use the full locked test split.
+    - `metadata_test.csv` is for locked evaluation only.
+    - Fast iteration may use `test_head_20` for continuity with the baseline, but final claims must use the full locked test split.
 
 2. Every experiment must be reproducible.
-   - Save config, seed, model checkpoint path, evaluation scope, commit SHA, and notes.
-   - Every training or evaluation run must leave a record in `reports/`.
+    - Save config, seed, model checkpoint path, evaluation scope, commit SHA, and notes.
+    - Every training or evaluation run must leave a record in `reports/`.
 
 3. Text normalization must be explicit, versioned, and stable.
-   - No silent normalization changes between runs.
-   - When normalization policy changes, it must be treated as a new experiment generation.
+    - No silent normalization changes between runs.
+    - When normalization policy changes, it must be treated as a new experiment generation.
 
 4. Data preparation must preserve traceability.
-   - Each training row must be traceable back to source audio and source text.
-   - Removed rows must stay documented with reasons.
+    - Each training row must be traceable back to source audio and source text.
+    - Removed rows must stay documented with reasons.
 
 5. Each phase must answer a real question.
-   - Example: "Does stable text normalization improve WER?"
-   - Example: "Does full fine-tuning outperform raw Whisper Small on the locked test split?"
+    - Example: "Does stable text normalization improve WER?"
+    - Example: "Does full fine-tuning outperform raw Whisper Small on the locked test split?"
 
 ## Branching Strategy
 
@@ -76,13 +76,13 @@ Branch rules:
 - Use `bf16` on this GPU
 - Use gradient checkpointing to reduce memory pressure
 - Start with:
-  - `per_device_train_batch_size=4`
-  - `gradient_accumulation_steps=4`
-  - `per_device_eval_batch_size=4`
-  - `group_by_length=True`
-  - `num_train_epochs=3`
-  - `learning_rate=1e-5`
-  - `dataloader_num_workers=2` or `4`
+    - `per_device_train_batch_size=4`
+    - `gradient_accumulation_steps=4`
+    - `per_device_eval_batch_size=4`
+    - `group_by_length=True`
+    - `num_train_epochs=3`
+    - `learning_rate=1e-5`
+    - `dataloader_num_workers=2` or `4`
 
 ### Audio policy
 
@@ -96,11 +96,11 @@ Branch rules:
 Track two evaluation tiers:
 
 - Quick benchmark:
-  - `test_head_20`
-  - Used for continuity and fast iteration
+    - `test_head_20`
+    - Used for continuity and fast iteration
 - Locked benchmark:
-  - Full `metadata_test.csv`
-  - Used for actual model comparison and release decisions
+    - Full `metadata_test.csv`
+    - Used for actual model comparison and release decisions
 
 Core metrics:
 
@@ -152,21 +152,21 @@ Tasks:
 
 - Write a normalization policy document for Tunisian Derja transcripts
 - Decide and implement rules for:
-  - whitespace normalization
-  - repeated spaces
-  - Arabic punctuation policy
-  - Arabic letter variants if any are to be normalized
-  - tatweel and obvious decorative characters
-  - numbers: keep as spoken form vs digits
-  - Latin/French/English code-switched words
-  - casing for Latin-script words
-  - bracketed noise or non-speech markers
-  - empty or near-empty text
+    - whitespace normalization
+    - repeated spaces
+    - Arabic punctuation policy
+    - Arabic letter variants if any are to be normalized
+    - tatweel and obvious decorative characters
+    - numbers: keep as spoken form vs digits
+    - Latin/French/English code-switched words
+    - casing for Latin-script words
+    - bracketed noise or non-speech markers
+    - empty or near-empty text
 - Create a reusable normalization module used by:
-  - dataset prep
-  - training labels
-  - evaluation references
-  - metric computation
+    - dataset prep
+    - training labels
+    - evaluation references
+    - metric computation
 - Add unit tests with real examples from the dataset
 - Rebuild metadata files only if the policy requires it, and record the change
 
@@ -198,24 +198,24 @@ Tasks:
 - Implement `training/train_whisper_small.py`
 - Implement dataset loading from the current CSV manifests
 - Build a Whisper-compatible data pipeline:
-  - audio load
-  - mono conversion
-  - resampling to `16 kHz`
-  - feature extraction
-  - label tokenization
+    - audio load
+    - mono conversion
+    - resampling to `16 kHz`
+    - feature extraction
+    - label tokenization
 - Implement a proper data collator for Whisper seq2seq training
 - Add config support for:
-  - output dir
-  - seed
-  - train/valid subset size
-  - batch size
-  - grad accumulation
-  - learning rate
-  - epochs
-  - eval/save/logging steps
+    - output dir
+    - seed
+    - train/valid subset size
+    - batch size
+    - grad accumulation
+    - learning rate
+    - epochs
+    - eval/save/logging steps
 - Use a tiny smoke subset first, for example:
-  - `1,000` train rows
-  - `200` valid rows
+    - `1,000` train rows
+    - `200` valid rows
 - Ensure checkpoints, logs, and evaluation reports are produced
 
 Recommended default training config for this machine:
@@ -253,12 +253,12 @@ Tasks:
 - Train on full `metadata_train.csv`
 - Validate on full `metadata_valid.csv`
 - Save:
-  - training config
-  - best checkpoint
-  - final checkpoint
-  - validation metric history
+    - training config
+    - best checkpoint
+    - final checkpoint
+    - validation metric history
 - Define the selection rule:
-  - choose best model by validation `WER`
+    - choose best model by validation `WER`
 - Run quick evaluation on `test_head_20`
 - Run locked evaluation on full `metadata_test.csv`
 - Record both in `reports/`
@@ -285,16 +285,16 @@ Tasks:
 
 - Implement `training/evaluate_checkpoint.py`
 - Produce structured prediction reports on:
-  - quick benchmark
-  - full locked test split
+    - quick benchmark
+    - full locked test split
 - Create an error analysis notebook or script that buckets examples by:
-  - code-switching with French/English
-  - Arabic-only speech
-  - short clips
-  - long clips
-  - high CER but moderate WER
-  - repeated-token hallucination
-  - major omissions
+    - code-switching with French/English
+    - Arabic-only speech
+    - short clips
+    - long clips
+    - high CER but moderate WER
+    - repeated-token hallucination
+    - major omissions
 - Sample and annotate a small fixed error-analysis set manually
 
 Exit criteria:
@@ -318,30 +318,30 @@ Goal:
 Possible tracks:
 
 - Data track:
-  - remove bad labels
-  - fix obvious transcript inconsistencies
-  - tighten duration thresholds
-  - optionally add segmentation for long utterances
+    - remove bad labels
+    - fix obvious transcript inconsistencies
+    - tighten duration thresholds
+    - optionally add segmentation for long utterances
 - Text track:
-  - refine normalization policy
-  - improve handling of Latin-script code-switching
+    - refine normalization policy
+    - improve handling of Latin-script code-switching
 - Training track:
-  - tune learning rate
-  - tune epochs
-  - tune effective batch size
-  - tune warmup ratio
-  - compare best-vs-last checkpoint behavior
+    - tune learning rate
+    - tune epochs
+    - tune effective batch size
+    - tune warmup ratio
+    - compare best-vs-last checkpoint behavior
 - Decoding track:
-  - test generation settings
-  - compare constrained language/task settings
+    - test generation settings
+    - compare constrained language/task settings
 
 Rules for this phase:
 
 - Only one major variable change per experiment family
 - Every experiment must declare:
-  - what changed
-  - why it changed
-  - what metric is expected to improve
+    - what changed
+    - why it changed
+    - what metric is expected to improve
 
 Exit criteria:
 
@@ -366,16 +366,16 @@ Tasks:
 - Add a simple local transcription CLI
 - Add a model report template for future checkpoints
 - Prepare a Hugging Face model card with:
-  - base model
-  - training data description
-  - evaluation results
-  - intended use
-  - known limitations
+    - base model
+    - training data description
+    - evaluation results
+    - intended use
+    - known limitations
 - Prepare a dataset card if the dataset is to be shared
 - Decide whether to publish:
-  - weights only
-  - weights plus processor
-  - sample evaluation artifacts
+    - weights only
+    - weights plus processor
+    - sample evaluation artifacts
 
 Exit criteria:
 
@@ -399,17 +399,17 @@ Tasks:
 
 - Re-run the baseline if needed under the final normalization/evaluation policy
 - Re-run final model evaluation on:
-  - `test_head_20`
-  - full locked test split
+    - `test_head_20`
+    - full locked test split
 - Build a comparison table:
-  - raw Whisper Small
-  - first fine-tuned model
-  - best final model
+    - raw Whisper Small
+    - first fine-tuned model
+    - best final model
 - Write a final summary including:
-  - what worked
-  - what did not work
-  - where the model still fails
-  - what the next project should try
+    - what worked
+    - what did not work
+    - where the model still fails
+    - what the next project should try
 
 Exit criteria:
 

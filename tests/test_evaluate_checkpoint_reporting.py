@@ -26,6 +26,12 @@ def make_result(run_name: str, notes: str, wer: float) -> EvaluationRunResult:
         source_csv="dataset/metadata_test.csv",
         created_at="2026-04-28T00:10:00+01:00",
         notes=notes,
+        decoding_preset="phase05_safe_decode_v1",
+        generation_max_length=225,
+        generation_num_beams=3,
+        generation_length_penalty=1.0,
+        generation_no_repeat_ngram_size=3,
+        generation_repetition_penalty=1.1,
         predictions=[
             PredictionRecord(
                 id="sample_1",
@@ -53,6 +59,8 @@ def test_build_summary_markdown_includes_checkpoint_details() -> None:
     assert "`outputs/train_runs/whisper-small-phase03-full`" in summary
     assert "`0.111111`" in summary
     assert "Locked test evaluation." in summary
+    assert "Decoding preset" in summary
+    assert "`phase05_safe_decode_v1`" in summary
 
 
 def test_get_eval_scope_distinguishes_head_and_full() -> None:
