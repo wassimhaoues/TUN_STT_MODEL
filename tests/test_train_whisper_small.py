@@ -121,6 +121,18 @@ def test_select_rows_is_reproducible_and_applies_duration_filter(tmp_path: Path)
     assert "sample_3" not in {row.id for row in first}
 
 
+def test_select_rows_zero_means_use_all_eligible_rows(tmp_path: Path) -> None:
+    rows = [
+        make_row(tmp_path, "sample_1", 4.0),
+        make_row(tmp_path, "sample_2", 5.0),
+        make_row(tmp_path, "sample_3", 40.0),
+    ]
+
+    selected = select_rows(rows, sample_size=0, seed=7, max_duration_seconds=10.0)
+
+    assert [row.id for row in selected] == ["sample_1", "sample_2"]
+
+
 def test_validate_training_config_rejects_zero_max_steps(tmp_path: Path) -> None:
     invalid = replace(make_config(tmp_path), max_steps=0)
 
@@ -169,6 +181,8 @@ def test_phase02_artifacts_and_history_are_written(tmp_path: Path) -> None:
         reports_dir=Path(config.reports_dir),
         config=config,
         environment=environment,
+        train_profile=train_profile,
+        valid_profile=valid_profile,
         eval_metrics=result.eval_metrics,
         best_checkpoint=result.best_checkpoint,
     )
@@ -199,6 +213,7 @@ def test_phase02_artifacts_and_history_are_written(tmp_path: Path) -> None:
     assert history_rows[0]["run_name"] == config.run_name
     assert history_rows[0]["run_type"] == "phase02_smoke_train"
     assert history_rows[0]["wer"] == "0.456789"
+    assert history_rows[0]["n_samples"] == "3"
     assert "train_samples=3" in history_rows[0]["notes"]
 
 

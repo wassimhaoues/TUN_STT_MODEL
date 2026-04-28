@@ -29,6 +29,7 @@ DEFAULT_TRAIN_CSV = DATASET_DIR / "metadata_train.csv"
 DEFAULT_VALID_CSV = DATASET_DIR / "metadata_valid.csv"
 DEFAULT_MODEL_NAME = "openai/whisper-small"
 DEFAULT_RUN_TYPE = "phase02_smoke_train"
+DEFAULT_PHASE_LABEL = "Phase 02 Smoke Training"
 DEFAULT_LANGUAGE = "arabic"
 DEFAULT_TASK = "transcribe"
 DEFAULT_TRAIN_SAMPLES = 1000
@@ -185,6 +186,11 @@ def parse_args() -> argparse.Namespace:
         "--notes",
         default="",
         help="Optional notes to add to the tracked report.",
+    )
+    parser.add_argument(
+        "--run-type",
+        default=DEFAULT_RUN_TYPE,
+        help=(f"Tracked run type label. Defaults to {DEFAULT_RUN_TYPE}."),
     )
     parser.add_argument(
         "--train-csv",
@@ -366,9 +372,14 @@ def validate_positive(name: str, value: int) -> None:
         raise ValueError(f"{name} must be greater than 0.")
 
 
+def validate_non_negative(name: str, value: int) -> None:
+    if value < 0:
+        raise ValueError(f"{name} must be 0 or greater.")
+
+
 def validate_training_config(config: TrainingConfig) -> None:
-    validate_positive("train_samples", config.train_samples)
-    validate_positive("valid_samples", config.valid_samples)
+    validate_non_negative("train_samples", config.train_samples)
+    validate_non_negative("valid_samples", config.valid_samples)
     validate_positive("per_device_train_batch_size", config.per_device_train_batch_size)
     validate_positive("per_device_eval_batch_size", config.per_device_eval_batch_size)
     validate_positive("gradient_accumulation_steps", config.gradient_accumulation_steps)
@@ -428,7 +439,7 @@ def resolve_training_config(args: argparse.Namespace) -> TrainingConfig:
 
     config = TrainingConfig(
         run_name=run_name,
-        run_type=DEFAULT_RUN_TYPE,
+        run_type=args.run_type,
         model_name=args.model_name,
         train_csv=str(Path(args.train_csv)),
         valid_csv=str(Path(args.valid_csv)),
@@ -507,6 +518,9 @@ def select_rows(
         and row.duration <= max_duration_seconds
         and Path(row.audio_path).exists()
     ]
+    if sample_size == 0:
+        return sorted(eligible, key=lambda row: (row.duration, row.id))
+
     if len(eligible) < sample_size:
         raise ValueError(
             f"Requested {sample_size} rows, but only {len(eligible)} eligible rows remain "
@@ -536,7 +550,7 @@ def build_dataset_profile(
         split_name=split_name,
         source_csv=str(source_csv),
         selected_rows=len(selected_rows),
-        requested_rows=requested_rows,
+        requested_rows=requested_rows or len(selected_rows),
         total_available_rows=total_available_rows,
         total_hours=round(sum(durations) / 3600, 3),
         min_duration=round(durations[0], 3),
@@ -550,6 +564,8 @@ def build_dataset_profile(
 def build_history_row(
     config: TrainingConfig,
     environment: EnvironmentSnapshot,
+    train_profile: DatasetProfile,
+    valid_profile: DatasetProfile,
     eval_metrics: dict[str, float],
     best_checkpoint: str,
 ) -> dict[str, str]:
@@ -562,8 +578,12 @@ def build_history_row(
         "run_name": config.run_name,
         "run_type": config.run_type,
         "model_name": config.model_name,
-        "eval_scope": f"valid_head_{config.valid_samples}",
-        "n_samples": str(config.train_samples),
+        "eval_scope": (
+            "valid_full"
+            if valid_profile.selected_rows == valid_profile.total_available_rows
+            else f"valid_head_{valid_profile.selected_rows}"
+        ),
+        "n_samples": str(train_profile.selected_rows),
         "wer": format_metric(eval_metrics.get("eval_wer", float("nan"))),
         "cer": format_metric(eval_metrics.get("eval_cer", float("nan"))),
         "device": environment.device,
@@ -576,7 +596,7 @@ def build_history_row(
 
 
 def format_metric(value: float) -> str:
-    if value != value:
+    if math.isnan(value):
         return "nan"
     return f"{value:.6f}"
 
@@ -585,6 +605,8 @@ def append_experiment_history(
     reports_dir: Path,
     config: TrainingConfig,
     environment: EnvironmentSnapshot,
+    train_profile: DatasetProfile,
+    valid_profile: DatasetProfile,
     eval_metrics: dict[str, float],
     best_checkpoint: str,
 ) -> None:
@@ -599,7 +621,16 @@ def append_experiment_history(
         )
         if write_header:
             writer.writeheader()
-        writer.writerow(build_history_row(config, environment, eval_metrics, best_checkpoint))
+        writer.writerow(
+            build_history_row(
+                config,
+                environment,
+                train_profile,
+                valid_profile,
+                eval_metrics,
+                best_checkpoint,
+            )
+        )
 
 
 def ensure_json(path: Path, payload: Any) -> None:
@@ -629,6 +660,36 @@ def write_selected_manifest(path: Path, rows: list[ManifestRow]) -> None:
 
 
 def build_summary_markdown(result: TrainingRunResult) -> str:
+    phase_label = (
+        "Phase 03 Full Fine-Tune"
+        if result.config.run_type == "phase03_full_finetune"
+        else DEFAULT_PHASE_LABEL
+    )
+    opening_lines = {
+        "phase03_full_finetune": [
+            (
+                "This report records the first full Whisper Small fine-tuning run "
+                "on the complete train and validation manifests."
+            ),
+            (
+                "Its job is to answer whether straightforward supervised "
+                "fine-tuning already beats the frozen baseline."
+            ),
+        ],
+        DEFAULT_RUN_TYPE: [
+            "This report records the Phase 02 end-to-end Whisper Small smoke fine-tuning run.",
+            (
+                "Its job is to prove that training, checkpointing, and validation "
+                "all work reliably on this project setup."
+            ),
+        ],
+    }.get(
+        result.config.run_type,
+        [
+            f"This report records the tracked training run `{result.config.run_type}`.",
+            "Use it to compare this run against the baseline and later fine-tuning iterations.",
+        ],
+    )
     train_metrics_lines = [
         f"- {key}: `{format_metric(value)}`" for key, value in sorted(result.train_metrics.items())
     ]
@@ -639,13 +700,9 @@ def build_summary_markdown(result: TrainingRunResult) -> str:
 
     return "\n".join(
         [
-            f"# Phase 02 Smoke Training Report: {result.config.run_name}",
+            f"# {phase_label} Report: {result.config.run_name}",
             "",
-            "This report records the Phase 02 end-to-end Whisper Small smoke fine-tuning run.",
-            (
-                "Its job is to prove that training, checkpointing, and validation "
-                "all work reliably on this project setup."
-            ),
+            *opening_lines,
             "",
             "## Run Details",
             "",
@@ -656,6 +713,7 @@ def build_summary_markdown(result: TrainingRunResult) -> str:
             f"- Git commit: `{result.config.git_commit}`",
             f"- Git dirty at launch: `{result.config.git_dirty}`",
             f"- Output dir: `{result.config.output_dir}`",
+            f"- Exported best-model path: `{result.config.output_dir}`",
             f"- Train manifest: `{result.config.train_csv}`",
             f"- Valid manifest: `{result.config.valid_csv}`",
             f"- Normalization version: `{NORMALIZATION_VERSION}`",
@@ -1169,7 +1227,15 @@ def run_training(config: TrainingConfig) -> TrainingRunResult:
         eval_metrics=eval_metrics,
         summary_markdown=build_summary_markdown(result),
     )
-    append_experiment_history(reports_dir, config, environment, eval_metrics, best_checkpoint)
+    append_experiment_history(
+        reports_dir,
+        config,
+        environment,
+        train_profile,
+        valid_profile,
+        eval_metrics,
+        best_checkpoint,
+    )
     return result
 
 

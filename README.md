@@ -23,6 +23,7 @@ make check-dataset
 make smoke-whisper
 make baseline
 make train-smoke
+make eval-checkpoint
 ```
 
 ## Baseline Tracking
@@ -69,6 +70,22 @@ Each smoke run writes:
 - `reports/runs/<run_name>/selected_valid_manifest.csv`: exact valid subset used
 - `reports/runs/<run_name>/train_metrics.json`: trainer-side train metrics
 - `reports/runs/<run_name>/eval_metrics.json`: validation metrics from generated predictions
+
+## Phase 03 Full Fine-Tune
+
+Phase 03 reuses the training pipeline for the first full train/valid run, then evaluates the exported best model on both the quick and locked test scopes.
+
+Runbook:
+
+- [docs/phase03_full_finetune_runbook.md](/home/coworky/Study/Deeplearning/TUN_STT_MODEL/docs/phase03_full_finetune_runbook.md)
+
+Main commands:
+
+```bash
+python training/train_whisper_small.py --run-type phase03_full_finetune --train-samples 0 --valid-samples 0 --max-steps -1
+python training/evaluate_checkpoint.py --model-path outputs/train_runs/<run_name> --samples 20
+python training/evaluate_checkpoint.py --model-path outputs/train_runs/<run_name> --samples 0
+```
 
 ## Project Layout
 
