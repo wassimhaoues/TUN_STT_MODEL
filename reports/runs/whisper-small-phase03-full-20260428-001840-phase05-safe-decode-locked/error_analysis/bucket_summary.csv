@@ -1,0 +1,9 @@
+bucket_name,description,sample_count,sample_rate,average_wer,average_cer,corpus_wer,corpus_cer
+code_switched_reference,Reference contains Latin-script code-switching.,595,0.574324,0.369589,0.188712,0.366600,0.178332
+arabic_only_reference,Reference is Arabic-only with no Latin-script words.,441,0.425676,0.417463,0.174115,0.417612,0.165530
+short_clip,Clip duration is shorter than 3.0 seconds.,318,0.306950,0.428537,0.212853,0.406465,0.191824
+long_clip,Clip duration is at least 10.0 seconds.,134,0.129344,0.364510,0.155380,0.378032,0.165384
+high_cer_moderate_wer,Character corruption is high even when word error is only moderate.,22,0.021236,0.502734,0.444841,0.520231,0.436195
+major_omission,Prediction is much shorter than the reference and misses large content.,18,0.017375,0.897917,0.773333,0.853933,0.709534
+repeated_token_hallucination,Prediction contains repeated token loops not present in the reference.,1,0.000965,1.047619,0.760000,1.047619,0.760000
+catastrophic_looping,A severe repetition loop causes extremely large WER.,0,0.000000,nan,nan,nan,nan
