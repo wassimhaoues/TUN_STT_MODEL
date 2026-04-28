@@ -596,7 +596,7 @@ def build_history_row(
 
 
 def format_metric(value: float) -> str:
-    if value != value:
+    if math.isnan(value):
         return "nan"
     return f"{value:.6f}"
 
