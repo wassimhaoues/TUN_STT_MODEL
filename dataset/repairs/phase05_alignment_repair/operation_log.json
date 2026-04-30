@@ -1,0 +1,145 @@
+{
+  "metadata_all": "/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/metadata_all.csv",
+  "fixes_path": "/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/refrence_fixes.txt",
+  "audio_dir": "/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/extracted_wavs",
+  "delete_range": [
+    "sample_00013107",
+    "sample_00013115"
+  ],
+  "deleted_rows": 9,
+  "fixed_rows": 63,
+  "compacted_ids": true,
+  "final_row_count": 20864,
+  "deleted_ids": [
+    "sample_00013107",
+    "sample_00013108",
+    "sample_00013109",
+    "sample_00013110",
+    "sample_00013111",
+    "sample_00013112",
+    "sample_00013113",
+    "sample_00013114",
+    "sample_00013115"
+  ],
+  "moved_audio": [
+    {
+      "old_path": "/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/extracted_wavs/sample_00013107.wav",
+      "new_path": "/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/repairs/phase05_alignment_repair/removed_audio/sample_00013107.wav"
+    },
+    {
+      "old_path": "/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/extracted_wavs/sample_00013108.wav",
+      "new_path": "/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/repairs/phase05_alignment_repair/removed_audio/sample_00013108.wav"
+    },
+    {
+      "old_path": "/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/extracted_wavs/sample_00013109.wav",
+      "new_path": "/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/repairs/phase05_alignment_repair/removed_audio/sample_00013109.wav"
+    },
+    {
+      "old_path": "/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/extracted_wavs/sample_00013110.wav",
+      "new_path": "/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/repairs/phase05_alignment_repair/removed_audio/sample_00013110.wav"
+    },
+    {
+      "old_path": "/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/extracted_wavs/sample_00013111.wav",
+      "new_path": "/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/repairs/phase05_alignment_repair/removed_audio/sample_00013111.wav"
+    },
+    {
+      "old_path": "/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/extracted_wavs/sample_00013112.wav",
+      "new_path": "/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/repairs/phase05_alignment_repair/removed_audio/sample_00013112.wav"
+    },
+    {
+      "old_path": "/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/extracted_wavs/sample_00013113.wav",
+      "new_path": "/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/repairs/phase05_alignment_repair/removed_audio/sample_00013113.wav"
+    },
+    {
+      "old_path": "/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/extracted_wavs/sample_00013114.wav",
+      "new_path": "/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/repairs/phase05_alignment_repair/removed_audio/sample_00013114.wav"
+    },
+    {
+      "old_path": "/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/extracted_wavs/sample_00013115.wav",
+      "new_path": "/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/repairs/phase05_alignment_repair/removed_audio/sample_00013115.wav"
+    }
+  ],
+  "renamed_audio_count": 7757,
+  "renamed_audio_preview": [
+    {
+      "old_path": "/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/extracted_wavs/sample_00013116.wav",
+      "new_path": "/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/extracted_wavs/sample_00013107.wav"
+    },
+    {
+      "old_path": "/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/extracted_wavs/sample_00013117.wav",
+      "new_path": "/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/extracted_wavs/sample_00013108.wav"
+    },
+    {
+      "old_path": "/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/extracted_wavs/sample_00013118.wav",
+      "new_path": "/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/extracted_wavs/sample_00013109.wav"
+    },
+    {
+      "old_path": "/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/extracted_wavs/sample_00013119.wav",
+      "new_path": "/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/extracted_wavs/sample_00013110.wav"
+    },
+    {
+      "old_path": "/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/extracted_wavs/sample_00013120.wav",
+      "new_path": "/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/extracted_wavs/sample_00013111.wav"
+    },
+    {
+      "old_path": "/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/extracted_wavs/sample_00013121.wav",
+      "new_path": "/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/extracted_wavs/sample_00013112.wav"
+    },
+    {
+      "old_path": "/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/extracted_wavs/sample_00013122.wav",
+      "new_path": "/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/extracted_wavs/sample_00013113.wav"
+    },
+    {
+      "old_path": "/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/extracted_wavs/sample_00013123.wav",
+      "new_path": "/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/extracted_wavs/sample_00013114.wav"
+    },
+    {
+      "old_path": "/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/extracted_wavs/sample_00013124.wav",
+      "new_path": "/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/extracted_wavs/sample_00013115.wav"
+    },
+    {
+      "old_path": "/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/extracted_wavs/sample_00013125.wav",
+      "new_path": "/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/extracted_wavs/sample_00013116.wav"
+    },
+    {
+      "old_path": "/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/extracted_wavs/sample_00013126.wav",
+      "new_path": "/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/extracted_wavs/sample_00013117.wav"
+    },
+    {
+      "old_path": "/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/extracted_wavs/sample_00013127.wav",
+      "new_path": "/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/extracted_wavs/sample_00013118.wav"
+    },
+    {
+      "old_path": "/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/extracted_wavs/sample_00013128.wav",
+      "new_path": "/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/extracted_wavs/sample_00013119.wav"
+    },
+    {
+      "old_path": "/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/extracted_wavs/sample_00013129.wav",
+      "new_path": "/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/extracted_wavs/sample_00013120.wav"
+    },
+    {
+      "old_path": "/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/extracted_wavs/sample_00013130.wav",
+      "new_path": "/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/extracted_wavs/sample_00013121.wav"
+    },
+    {
+      "old_path": "/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/extracted_wavs/sample_00013131.wav",
+      "new_path": "/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/extracted_wavs/sample_00013122.wav"
+    },
+    {
+      "old_path": "/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/extracted_wavs/sample_00013132.wav",
+      "new_path": "/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/extracted_wavs/sample_00013123.wav"
+    },
+    {
+      "old_path": "/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/extracted_wavs/sample_00013133.wav",
+      "new_path": "/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/extracted_wavs/sample_00013124.wav"
+    },
+    {
+      "old_path": "/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/extracted_wavs/sample_00013134.wav",
+      "new_path": "/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/extracted_wavs/sample_00013125.wav"
+    },
+    {
+      "old_path": "/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/extracted_wavs/sample_00013135.wav",
+      "new_path": "/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/extracted_wavs/sample_00013126.wav"
+    }
+  ]
+}

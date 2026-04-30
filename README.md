@@ -26,6 +26,7 @@ make train-smoke
 make eval-checkpoint
 make analyze-errors
 make build-phase05-manifests
+make prepare-phase05-b
 ```
 
 ## Baseline Tracking
@@ -118,11 +119,13 @@ Helpful commands:
 ```bash
 python training/evaluate_checkpoint.py --help
 python dataset/build_phase05_manifests.py --help
+python dataset/prepare_phase05_experiment_b.py --help
 ```
 
 Runbook:
 
 - [docs/phase05_targeted_improvements_runbook.md](/home/coworky/Study/Deeplearning/TUN_STT_MODEL/docs/phase05_targeted_improvements_runbook.md)
+- [docs/phase05_experiment_b_preparation.md](/home/coworky/Study/Deeplearning/TUN_STT_MODEL/docs/phase05_experiment_b_preparation.md)
 
 ## Project Layout
 
