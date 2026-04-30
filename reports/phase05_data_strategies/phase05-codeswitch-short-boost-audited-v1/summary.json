@@ -1,0 +1,22 @@
+{
+  "experiment_name": "phase05-codeswitch-short-boost-audited-v1",
+  "train_csv": "/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/metadata_train.csv",
+  "valid_csv": "/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/metadata_valid.csv",
+  "output_train_csv": "/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/phase05_manifests/phase05-codeswitch-short-boost-audited-v1/metadata_train.csv",
+  "output_valid_csv": "/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/phase05_manifests/phase05-codeswitch-short-boost-audited-v1/metadata_valid.csv",
+  "code_switch_boost_factor": 2,
+  "short_clip_boost_factor": 2,
+  "short_clip_threshold": 3.0,
+  "train_rows_in": 18639,
+  "train_rows_out": 33224,
+  "valid_rows_in": 1036,
+  "valid_rows_out": 1036,
+  "code_switched_train_rows": 10708,
+  "short_train_rows": 6022,
+  "both_code_switched_and_short_rows": 2037,
+  "audit_csv": "/home/coworky/Study/Deeplearning/TUN_STT_MODEL/dataset/audits/phase05_experiment_b_training_audit.csv",
+  "excluded_train_rows": 0,
+  "corrected_train_rows": 0,
+  "boost_approved_rows": 0,
+  "gain_normalize_flag_rows": 0
+}

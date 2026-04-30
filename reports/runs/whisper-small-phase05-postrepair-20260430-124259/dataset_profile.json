@@ -1,0 +1,50 @@
+{
+  "train": {
+    "split_name": "train",
+    "source_csv": "dataset/metadata_train.csv",
+    "selected_rows": 18639,
+    "requested_rows": 18639,
+    "total_available_rows": 18639,
+    "total_hours": 27.693,
+    "min_duration": 0.5,
+    "median_duration": 4.228,
+    "max_duration": 29.863,
+    "normalization_version": "v1",
+    "sample_ids": [
+      "sample_00001837",
+      "sample_00001849",
+      "sample_00012063",
+      "sample_00019236",
+      "sample_00000729",
+      "sample_00001253",
+      "sample_00010182",
+      "sample_00001504",
+      "sample_00010702",
+      "sample_00013295"
+    ]
+  },
+  "valid": {
+    "split_name": "valid",
+    "source_csv": "dataset/metadata_valid.csv",
+    "selected_rows": 1036,
+    "requested_rows": 1036,
+    "total_available_rows": 1036,
+    "total_hours": 1.509,
+    "min_duration": 0.54,
+    "median_duration": 4.137,
+    "max_duration": 27.406,
+    "normalization_version": "v1",
+    "sample_ids": [
+      "sample_00009690",
+      "sample_00009976",
+      "sample_00013025",
+      "sample_00014183",
+      "sample_00004763",
+      "sample_00008584",
+      "sample_00000134",
+      "sample_00014520",
+      "sample_00013316",
+      "sample_00000395"
+    ]
+  }
+}

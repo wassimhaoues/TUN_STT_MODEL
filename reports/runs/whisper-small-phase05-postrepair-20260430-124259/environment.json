@@ -1,0 +1,11 @@
+{
+  "device": "cuda:0",
+  "gpu_name": "NVIDIA GeForce RTX 5070 Laptop GPU",
+  "gpu_total_memory_gb": 7.53,
+  "cpu_count": 24,
+  "ram_gb": 15.32,
+  "precision": "bf16",
+  "torch_version": "2.10.0+cu130",
+  "transformers_version": "5.6.2",
+  "datasets_version": "4.8.5"
+}

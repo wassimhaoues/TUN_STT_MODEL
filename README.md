@@ -27,6 +27,7 @@ make eval-checkpoint
 make analyze-errors
 make build-phase05-manifests
 make prepare-phase05-b
+make transcribe-one
 ```
 
 ## Baseline Tracking
@@ -120,6 +121,7 @@ Helpful commands:
 python training/evaluate_checkpoint.py --help
 python dataset/build_phase05_manifests.py --help
 python dataset/prepare_phase05_experiment_b.py --help
+python training/transcribe_one_audio.py --help
 ```
 
 Runbook:

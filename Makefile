@@ -3,7 +3,7 @@ PIP := $(PYTHON) -m pip
 RUFF := $(PYTHON) -m ruff
 PYTEST := $(PYTHON) -m pytest
 
-.PHONY: install-runtime install-dev lint format format-check test check validate-dataset check-dataset smoke-whisper baseline train-smoke eval-checkpoint analyze-errors build-phase05-manifests prepare-phase05-b clean
+.PHONY: install-runtime install-dev lint format format-check test check validate-dataset check-dataset smoke-whisper baseline train-smoke eval-checkpoint analyze-errors build-phase05-manifests prepare-phase05-b transcribe-one clean
 
 install-runtime:
 	$(PIP) install -r requirements/runtime.txt
@@ -51,6 +51,9 @@ build-phase05-manifests:
 
 prepare-phase05-b:
 	$(PYTHON) dataset/prepare_phase05_experiment_b.py --help
+
+transcribe-one:
+	$(PYTHON) training/transcribe_one_audio.py --help
 
 clean:
 	rm -rf .pytest_cache .ruff_cache __pycache__ htmlcov .coverage coverage.xml

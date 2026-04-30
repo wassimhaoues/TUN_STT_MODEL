@@ -4,10 +4,14 @@ from training.analyze_errors import (
     analyze_prediction_row,
     build_analysis_report,
     build_bucket_summary,
+    build_cer_review_counts,
     build_summary_markdown,
     has_repetition_loop,
     max_repetition_run,
+    resolve_cer_review_band,
+    resolve_critical_review_reason,
     resolve_output_dir,
+    select_cer_review_queue,
 )
 
 
@@ -34,6 +38,8 @@ def test_analyze_prediction_row_flags_major_issues() -> None:
     assert "short_clip" in sample.bucket_flags
     assert "major_omission" in sample.bucket_flags
     assert "repeated_token_hallucination" in sample.bucket_flags
+    assert sample.cer_review_band == "critical"
+    assert sample.critical_review_reason == "repeated_words"
 
 
 def test_repetition_hallucination_tolerates_small_reference_repetition() -> None:
@@ -80,6 +86,7 @@ def test_build_analysis_report_and_markdown() -> None:
     assert report.manual_review_candidates
     assert "Phase 04 Error Analysis" in markdown
     assert "Main Findings" in markdown
+    assert "CER Review Bands" in markdown
 
 
 def test_resolve_output_dir_for_run_predictions() -> None:
@@ -87,3 +94,52 @@ def test_resolve_output_dir_for_run_predictions() -> None:
     output_dir = resolve_output_dir(predictions_csv)
 
     assert output_dir == predictions_csv.parent / "error_analysis"
+
+
+def test_cer_review_band_thresholds_and_critical_override() -> None:
+    assert resolve_cer_review_band(0.10, "") == "good"
+    assert resolve_cer_review_band(0.20, "") == "acceptable"
+    assert resolve_cer_review_band(0.30, "") == "needs_review"
+    assert resolve_cer_review_band(0.45, "") == "high_priority_review"
+    assert resolve_cer_review_band(0.05, "empty_prediction") == "critical"
+
+
+def test_critical_review_reason_detects_wrong_language() -> None:
+    reason = resolve_critical_review_reason(
+        prediction="bonjour",
+        repeated_hallucination=False,
+        catastrophic_looping=False,
+        major_omission=False,
+        wrong_language_prediction=True,
+    )
+    assert reason == "wrong_language"
+
+
+def test_cer_review_queue_prioritizes_critical_then_high_cer() -> None:
+    source_row = {"id": "sample_x", "duration": "5.000"}
+    samples = [
+        analyze_prediction_row(
+            {
+                "id": "sample_1",
+                "wav_path": "dataset/extracted_wavs/sample_1.wav",
+                "reference": "مرحبا بيك",
+                "prediction": "bonjour",
+            },
+            source_row,
+        ),
+        analyze_prediction_row(
+            {
+                "id": "sample_2",
+                "wav_path": "dataset/extracted_wavs/sample_2.wav",
+                "reference": "مرحبا بيك",
+                "prediction": "مرحبا فيك جدا",
+            },
+            source_row,
+        ),
+    ]
+
+    queue = select_cer_review_queue(samples)
+    counts = build_cer_review_counts(samples)
+
+    assert queue[0].sample_id == "sample_1"
+    assert counts["critical"] == 1

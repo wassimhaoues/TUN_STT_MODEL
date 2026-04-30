@@ -379,7 +379,7 @@ def main() -> None:
     valid_rows = load_manifest_rows(valid_csv)
     audit_decisions = load_audit_decisions(audit_csv)
     expanded_train_rows = expand_training_rows(
-        train_rows=train_rows,
+        rows=train_rows,
         audit_decisions=audit_decisions,
         code_switch_boost_factor=args.code_switch_boost_factor,
         short_clip_boost_factor=args.short_clip_boost_factor,

@@ -29,6 +29,25 @@ OMISSION_WER_THRESHOLD = 0.5
 REPEATED_WER_THRESHOLD = 0.75
 CATASTROPHIC_WER_THRESHOLD = 2.0
 MANUAL_REVIEW_LIMIT = 20
+CER_GOOD_MAX = 0.15
+CER_ACCEPTABLE_MAX = 0.25
+CER_NEEDS_REVIEW_MAX = 0.40
+
+CER_REVIEW_BAND_ORDER = (
+    "good",
+    "acceptable",
+    "needs_review",
+    "high_priority_review",
+    "critical",
+)
+
+CER_REVIEW_BAND_LABELS = {
+    "good": "Good",
+    "acceptable": "Acceptable but inspect sometimes",
+    "needs_review": "Needs review",
+    "high_priority_review": "High priority review",
+    "critical": "Critical",
+}
 
 BUCKET_ORDER = (
     "code_switched_reference",
@@ -69,6 +88,9 @@ class PredictionSample:
     wer: float
     cer: float
     bucket_flags: tuple[str, ...]
+    cer_review_band: str
+    critical_review_flag: bool
+    critical_review_reason: str
 
 
 @dataclass(frozen=True)
@@ -97,6 +119,7 @@ class AnalysisReport:
     manual_findings: list[str]
     worst_samples: list[PredictionSample]
     manual_review_candidates: list[PredictionSample]
+    cer_review_counts: dict[str, int]
 
 
 def parse_args() -> argparse.Namespace:
@@ -181,6 +204,50 @@ def has_repetition_loop(tokens: list[str]) -> bool:
     return max_repetition_run(tokens) >= 2
 
 
+def is_wrong_language_prediction(reference: str, prediction: str) -> bool:
+    reference_has_arabic = has_arabic(reference)
+    prediction_has_arabic = has_arabic(prediction)
+    reference_has_latin = has_latin(reference)
+    prediction_has_latin = has_latin(prediction)
+    if reference_has_arabic and not prediction_has_arabic:
+        return True
+    if not reference_has_latin and prediction_has_latin and not prediction_has_arabic:
+        return True
+    return False
+
+
+def resolve_critical_review_reason(
+    prediction: str,
+    repeated_hallucination: bool,
+    catastrophic_looping: bool,
+    major_omission: bool,
+    wrong_language_prediction: bool,
+) -> str:
+    if not prediction.strip():
+        return "empty_prediction"
+    if catastrophic_looping:
+        return "catastrophic_looping"
+    if repeated_hallucination:
+        return "repeated_words"
+    if wrong_language_prediction:
+        return "wrong_language"
+    if major_omission:
+        return "major_omission"
+    return ""
+
+
+def resolve_cer_review_band(cer: float, critical_review_reason: str) -> str:
+    if critical_review_reason:
+        return "critical"
+    if cer < CER_GOOD_MAX:
+        return "good"
+    if cer < CER_ACCEPTABLE_MAX:
+        return "acceptable"
+    if cer < CER_NEEDS_REVIEW_MAX:
+        return "needs_review"
+    return "high_priority_review"
+
+
 def analyze_prediction_row(
     prediction_row: dict[str, str],
     source_row: dict[str, str],
@@ -209,6 +276,15 @@ def analyze_prediction_row(
         and (wer >= REPEATED_WER_THRESHOLD or len(prediction_words) >= len(reference_words) + 4)
     )
     catastrophic_looping = repeated_hallucination and wer >= CATASTROPHIC_WER_THRESHOLD
+    wrong_language_prediction = is_wrong_language_prediction(reference, prediction)
+    critical_review_reason = resolve_critical_review_reason(
+        prediction=prediction,
+        repeated_hallucination=repeated_hallucination,
+        catastrophic_looping=catastrophic_looping,
+        major_omission=major_omission,
+        wrong_language_prediction=wrong_language_prediction,
+    )
+    cer_review_band = resolve_cer_review_band(cer, critical_review_reason)
 
     bucket_flags: list[str] = []
     if has_latin(reference):
@@ -241,6 +317,9 @@ def analyze_prediction_row(
         wer=wer,
         cer=cer,
         bucket_flags=tuple(bucket_flags),
+        cer_review_band=cer_review_band,
+        critical_review_flag=bool(critical_review_reason),
+        critical_review_reason=critical_review_reason,
     )
 
 
@@ -368,6 +447,32 @@ def select_manual_review_candidates(samples: list[PredictionSample]) -> list[Pre
     return selected
 
 
+def build_cer_review_counts(samples: list[PredictionSample]) -> dict[str, int]:
+    return {
+        band: sum(1 for sample in samples if sample.cer_review_band == band)
+        for band in CER_REVIEW_BAND_ORDER
+    }
+
+
+def select_cer_review_queue(samples: list[PredictionSample]) -> list[PredictionSample]:
+    band_priority = {
+        "critical": 0,
+        "high_priority_review": 1,
+        "needs_review": 2,
+        "acceptable": 3,
+        "good": 4,
+    }
+    return sorted(
+        samples,
+        key=lambda sample: (
+            band_priority[sample.cer_review_band],
+            -sample.cer,
+            -sample.wer,
+            -sample.duration_seconds,
+        ),
+    )
+
+
 def build_analysis_report(
     predictions_csv: Path,
     source_csv: Path,
@@ -403,6 +508,7 @@ def build_analysis_report(
         manual_findings=build_manual_findings(samples, bucket_map),
         worst_samples=select_worst_samples(samples),
         manual_review_candidates=select_manual_review_candidates(samples),
+        cer_review_counts=build_cer_review_counts(samples),
     )
 
 
@@ -463,6 +569,13 @@ def build_summary_markdown(report: AnalysisReport) -> str:
             "## Main Findings",
             "",
             *findings_lines,
+            "",
+            "## CER Review Bands",
+            "",
+            *[
+                f"- {CER_REVIEW_BAND_LABELS[band]}: `{report.cer_review_counts[band]}`"
+                for band in CER_REVIEW_BAND_ORDER
+            ],
             "",
             "## Bucket Summary",
             "",
@@ -529,6 +642,9 @@ def write_sample_csv(path: Path, samples: list[PredictionSample]) -> None:
                 "wer",
                 "cer",
                 "bucket_flags",
+                "cer_review_band",
+                "critical_review_flag",
+                "critical_review_reason",
                 "reference",
                 "prediction",
             ],
@@ -548,10 +664,29 @@ def write_sample_csv(path: Path, samples: list[PredictionSample]) -> None:
                     "wer": format_metric(sample.wer),
                     "cer": format_metric(sample.cer),
                     "bucket_flags": "|".join(sample.bucket_flags),
+                    "cer_review_band": sample.cer_review_band,
+                    "critical_review_flag": str(sample.critical_review_flag),
+                    "critical_review_reason": sample.critical_review_reason,
                     "reference": sample.reference,
                     "prediction": sample.prediction,
                 }
             )
+
+
+def write_cer_review_band_csvs(output_dir: Path, samples: list[PredictionSample]) -> list[Path]:
+    output_paths: list[Path] = []
+    queue_samples = select_cer_review_queue(samples)
+    queue_path = output_dir / "cer_review_queue.csv"
+    write_sample_csv(queue_path, queue_samples)
+    output_paths.append(queue_path)
+
+    for band in CER_REVIEW_BAND_ORDER:
+        band_samples = [sample for sample in queue_samples if sample.cer_review_band == band]
+        band_path = output_dir / f"cer_{band}.csv"
+        write_sample_csv(band_path, band_samples)
+        output_paths.append(band_path)
+
+    return output_paths
 
 
 def load_samples(predictions_csv: Path, source_csv: Path) -> list[PredictionSample]:
@@ -574,7 +709,7 @@ def save_analysis_report(
     report: AnalysisReport,
     output_dir: Path,
     samples: list[PredictionSample],
-) -> tuple[Path, Path, Path, Path]:
+) -> tuple[Path, Path, Path, Path, list[Path]]:
     output_dir.mkdir(parents=True, exist_ok=True)
     summary_path = output_dir / "summary.md"
     bucket_summary_path = output_dir / "bucket_summary.csv"
@@ -585,8 +720,15 @@ def save_analysis_report(
     write_bucket_summary_csv(bucket_summary_path, report.bucket_summaries)
     write_sample_csv(detailed_rows_path, samples)
     write_sample_csv(manual_review_path, report.manual_review_candidates)
+    cer_review_paths = write_cer_review_band_csvs(output_dir, samples)
 
-    return summary_path, bucket_summary_path, detailed_rows_path, manual_review_path
+    return (
+        summary_path,
+        bucket_summary_path,
+        detailed_rows_path,
+        manual_review_path,
+        cer_review_paths,
+    )
 
 
 def resolve_output_dir(predictions_csv: Path) -> Path:
@@ -607,6 +749,7 @@ def main() -> None:
         bucket_summary_path,
         detailed_rows_path,
         manual_review_path,
+        cer_review_paths,
     ) = save_analysis_report(
         report,
         output_dir,
@@ -617,6 +760,7 @@ def main() -> None:
     print(f"Saved bucket summary to {bucket_summary_path}")
     print(f"Saved detailed rows to {detailed_rows_path}")
     print(f"Saved manual review candidates to {manual_review_path}")
+    print(f"Saved CER review queue to {cer_review_paths[0]}")
 
 
 if __name__ == "__main__":
