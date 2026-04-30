@@ -112,7 +112,7 @@ Each analysis run writes next to the evaluation report:
 Phase 05 turns the Phase 4 findings into controlled experiments:
 
 - safer decoding to reduce repetition loops and catastrophic generation failures
-- targeted train-manifest expansion for code-switched and short clips
+- targeted audited train-manifest expansion for code-switched and short clips
 
 Helpful commands:
 

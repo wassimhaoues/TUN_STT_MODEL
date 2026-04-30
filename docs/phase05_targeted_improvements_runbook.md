@@ -75,17 +75,26 @@ Success signal:
 - fewer `catastrophic_looping`
 - same or better locked-test WER/CER
 
-### Experiment B: Data-only emphasis on code-switched and short clips
+### Experiment B: Audited data emphasis on code-switched and short clips
 
 Question:
 
 - Does emphasizing code-switched and short training examples improve the hardest regimes from Phase 4?
 
+Before building the manifest:
+
+- regenerate the Phase 05 prep pack after any dataset repair
+- review `dataset/audits/phase05_experiment_b_training_audit.csv`
+- only mark `keep_for_phase05_boost=yes` for rows you trust
+- use `transcript_action=exclude` or `audio_action=exclude` to drop bad rows from the Experiment B train manifest
+- use `transcript_action=fix_text` plus `corrected_text` when you have a trusted correction
+
 Commands:
 
 ```bash
 python dataset/build_phase05_manifests.py \
-  --experiment-name phase05-codeswitch-short-boost-v1 \
+  --experiment-name phase05-codeswitch-short-boost-audited-v1 \
+  --audit-csv dataset/audits/phase05_experiment_b_training_audit.csv \
   --code-switch-boost-factor 2 \
   --short-clip-boost-factor 2 \
   --short-clip-threshold 3.0
@@ -93,9 +102,9 @@ python dataset/build_phase05_manifests.py \
 
 This writes:
 
-- `dataset/phase05_manifests/phase05-codeswitch-short-boost-v1/metadata_train.csv`
-- `dataset/phase05_manifests/phase05-codeswitch-short-boost-v1/metadata_valid.csv`
-- `reports/phase05_data_strategies/phase05-codeswitch-short-boost-v1/summary.md`
+- `dataset/phase05_manifests/phase05-codeswitch-short-boost-audited-v1/metadata_train.csv`
+- `dataset/phase05_manifests/phase05-codeswitch-short-boost-audited-v1/metadata_valid.csv`
+- `reports/phase05_data_strategies/phase05-codeswitch-short-boost-audited-v1/summary.md`
 
 Train with the new manifests while keeping the Phase 03 hyperparameters stable:
 
@@ -105,8 +114,8 @@ export RUN_NAME="whisper-small-phase05-data-boost-$(date +%Y%m%d-%H%M%S)"
 python training/train_whisper_small.py \
   --run-name "$RUN_NAME" \
   --run-type phase05_data_boost \
-  --train-csv dataset/phase05_manifests/phase05-codeswitch-short-boost-v1/metadata_train.csv \
-  --valid-csv dataset/phase05_manifests/phase05-codeswitch-short-boost-v1/metadata_valid.csv \
+  --train-csv dataset/phase05_manifests/phase05-codeswitch-short-boost-audited-v1/metadata_train.csv \
+  --valid-csv dataset/phase05_manifests/phase05-codeswitch-short-boost-audited-v1/metadata_valid.csv \
   --train-samples 0 \
   --valid-samples 0 \
   --max-steps -1 \
@@ -125,7 +134,7 @@ python training/train_whisper_small.py \
   --group-by-length \
   --precision auto \
   --decoding-preset standard \
-  --notes "Phase 05 data-only run with code-switched and short-clip emphasis"
+  --notes "Phase 05 data-only run with audited code-switched and short-clip emphasis"
 ```
 
 Then evaluate it with the same decoding policy as Phase 03 first:
